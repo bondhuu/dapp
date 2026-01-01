@@ -27,20 +27,20 @@ jobs:
       - name: Build Android APK
         run: |
           npm install
-          # পুরনো কোনো ফাইল থাকলে তা পরিষ্কার করা
+          # পুরনো অ্যান্ড্রয়েড প্ল্যাটফর্ম মুছে নতুন করে ফ্রেশভাবে অ্যাড করা
           cordova platform remove android || true
           cordova platform add android@12.0.1
           
-          # মেমোরি এবং লাইসেন্স ফিক্স
-          mkdir -p ~/.gradle
-          echo "org.gradle.jvmargs=-Xmx2048m" > ~/.gradle/gradle.properties
+          # লাইসেন্স অটো-একসেপ্ট করা
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
           
-          # গ্র্যাডল পারমিশন এবং অটোমেটিক বিল্ড
-          cd platforms/android
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          # মেমোরি ফিক্স
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx2048m" > ~/.gradle/gradle.properties
           
+          # বিল্ড কমান্ড (সরাসরি করডোভা ব্যবহার করে)
+          cordova build android --debug --device -- --packageType=apk
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
