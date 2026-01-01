@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Connection Check</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f7f6; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .status { font-weight: bold; margin: 10px 0; padding: 10px; border-radius: 8px; }
+        .online { background: #d4edda; color: #155724; }
+        .offline { background: #f8d7da; color: #721c24; }
+        button { padding: 12px 24px; border-radius: 25px; border: none; background: #4285F4; color: white; cursor: pointer; font-weight: bold; }
+        button:disabled { background: #ccc; }
+    </style>
+</head>
+<body>
 
+    <div class="card">
+        <h2>সিস্টেম কানেকশন চেক</h2>
+        
+        <div id="net-box" class="status offline">ইন্টারনেট: চেক করা হচ্ছে...</div>
+        <div id="bt-box" class="status offline">ব্লুটুথ: চেক করা হচ্ছে...</div>
+
+        <p id="msg" style="color: #666; font-size: 14px;"></p>
+        
+        <button id="next-btn" disabled onclick="alert('সফল! পরবর্তী ধাপে যাচ্ছেন...')">পরবর্তী ধাপ</button>
+    </div>
+
+    <script>
+        const netBox = document.getElementById('net-box');
+        const btBox = document.getElementById('bt-box');
+        const nextBtn = document.getElementById('next-btn');
+        const msg = document.getElementById('msg');
+
+        // ১. ইন্টারনেট কানেকশন চেক (Real-time)
+        function checkInternet() {
+            if (navigator.onLine) {
+                netBox.innerText = "✅ ইন্টারনেট: সচল (Online)";
+                netBox.className = "status online";
+                return true;
+            } else {
+                netBox.innerText = "❌ ইন্টারনেট: বন্ধ (Offline)";
+                netBox.className = "status offline";
+                return false;
+            }
+        }
+
+        // ২. ব্লুটুথ চেক করার অনুরোধ (Hardware Request)
+        async function checkBluetooth() {
+            if (!navigator.bluetooth) {
+                btBox.innerText = "⚠️ ব্লুটুথ: ব্রাউজার সাপোর্ট করে না";
+                return false;
+            }
+
+            try {
+                // এটি ফোনের ব্লুটুথ চালু আছে কিনা তা চেক করার চেষ্টা করবে
+                const available = await navigator.bluetooth.getAvailability();
+                if (available) {
+                    btBox.innerText = "✅ ব্লুটুথ: সচল";
+                    btBox.className = "status online";
+                    return true;
+                } else {
+                    btBox.innerText = "❌ ব্লুটুথ: বন্ধ";
+                    btBox.className = "status offline";
+                    return false;
+                }
+            } catch (error) {
+                console.log(error);
+                return false;
+            }
+        }
+
+        // ৩. মাস্টার ভ্যালিডেশন লজিক
+        async function validateSystem() {
+            const isNetOk = checkInternet();
+            const isBtOk = await checkBluetooth();
+
+            if (isNetOk && isBtOk) {
+                nextBtn.disabled = false;
+                msg.innerText = "সব ঠিক আছে! আপনি এখন পরবর্তী ধাপে যেতে পারেন।";
+            } else {
+                nextBtn.disabled = true;
+                msg.innerText = "দয়া করে ইন্টারনেট এবং ব্লুটুথ চালু করুন।";
+            }
+        }
+
+        // ইভেন্ট লিসেনার: ইউজার কানেকশন পরিবর্তন করলে সাথে সাথে আপডেট হবে
+        window.addEventListener('online', validateSystem);
+        window.addEventListener('offline', validateSystem);
+
+        // প্রতি ৩ সেকেন্ড অন্তর অটোমেটিক চেক করবে
+        setInterval(validateSystem, 3000);
+
+        // প্রথমবার লোড হওয়ার সময় চেক
+        window.onload = validateSystem;
+    </script>
+</body>
+</html>
