@@ -24,16 +24,19 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Install Dependencies
-        run: npm install
-
       - name: Build Android APK
         run: |
-          cordova platform add android
-          cordova build android --debug
+          npm install
+          cordova platform add android || true
+          # Force Gradle to use enough memory
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx2048m" > ~/.gradle/gradle.properties
+          # Build the APK
+          cordova build android --debug --device
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: my-p2p-app
           path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          
