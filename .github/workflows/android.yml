@@ -27,18 +27,21 @@ jobs:
       - name: Build Android APK
         run: |
           npm install
-          # পুরনো কোনো ভুল কনফিগারেশন থাকলে তা মুছে ফেলা
+          # পুরনো প্ল্যাটফর্ম থাকলে মুছে ফেলা
           cordova platform remove android || true
           
-          # ফ্রেশভাবে অ্যান্ড্রয়েড প্ল্যাটফর্ম যোগ করা
+          # নির্দিষ্ট ভার্সন যোগ করা যা স্ট্যাবল
           cordova platform add android@12.0.1
           
-          # মেমোরি এবং লাইসেন্স ফিক্স
+          # গ্র্যাডল এরর ফিক্স করার জন্য এনভায়রনমেন্ট সেটআপ
+          echo "CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https://services.gradle.org/distributions/gradle-8.1-bin.zip" >> $GITHUB_ENV
+          
+          # লাইসেন্স এবং মেমোরি ফিক্স
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
           mkdir -p ~/.gradle
           echo "org.gradle.jvmargs=-Xmx2048m" > ~/.gradle/gradle.properties
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
           
-          # নির্দিষ্ট গ্র্যাডল ভার্সন ব্যবহার না করে করডোভাকে নিজের মতো বিল্ড করতে দেওয়া
+          # ফ্রেশ বিল্ড কমান্ড
           cordova build android --debug --device -- --packageType=apk
 
       - name: Upload APK
