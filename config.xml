@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.p2p.dchat" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>DChat</name>
+    <description>Bitcoin Style P2P Messenger</description>
+    <author email="dev@callback.com" href="http://cordova.io">Your Name</author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="loglevel" value="DEBUG" />
+</widget>
