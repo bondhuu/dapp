@@ -1,0 +1,22 @@
+{
+  "name": "com.p2p.dchat",
+  "displayName": "DChat",
+  "version": "1.0.0",
+  "description": "Bitcoin Style P2P Messenger",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "p2p",
+    "bitcoin",
+    "chat"
+  ],
+  "author": "YourName",
+  "license": "ISC",
+  "dependencies": {
+    "cordova-android": "^12.0.0",
+    "cordova-plugin-network-information": "^3.0.0",
+    "cordova-plugin-whitelist": "^1.3.5"
+  }
+}
