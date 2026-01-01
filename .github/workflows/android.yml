@@ -27,9 +27,21 @@ jobs:
       - name: Build Android APK
         run: |
           npm install
-          cordova platform add android
-          # এগ্রিমেন্ট একসেপ্ট করা এবং মেমোরি ফিক্স
+          # পুরনো অ্যান্ড্রয়েড প্ল্যাটফর্ম থাকলে তা মুছে ফ্রেশ করা
+          cordova platform remove android || true
+          cordova platform add android@12.0.1
+          
+          # Gradle মেমোরি এবং লাইসেন্স ফিক্স
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx2048m" > ~/.gradle/gradle.properties
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          echo "org.gradle.jvmargs=-Xmx2048m" > gradle.properties
+          
+          # বিল্ড কমান্ড
           cordova build android --debug --device -- --packageType=apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-p2p-app
+          path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
           
